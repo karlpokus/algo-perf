@@ -1,0 +1,161 @@
+<html>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+    <title></title>
+    <style>
+        #chart-container {
+            min-width: 320px;
+            max-width: 720px;
+            display: block;
+            margin: auto;
+
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+    <div id="chart-container">
+        <canvas id="chart" width="400px" height="300px"></canvas>
+    </div>
+
+    <script>
+        //        =============================================
+        //        Add your algorithms here
+        //        =============================================
+        let givenArr = [1];
+
+        function recursiveSort(arr) {
+            for (var index = 0; index < arr.length - 1; index++) {
+                if (arr[index] > arr[index + 1]) {
+                    arr.splice(index + 2, 0, arr[index]);
+                    arr.splice(index, 1);
+                    return recursiveSort(arr);
+                }
+            }
+        }
+
+        // Insertion sort
+        function insertionSort(unsortedList) {
+            var len = unsortedList.length;
+            for (var i = 0; i < len; i++) {
+                var tmp = unsortedList[i];
+                for (var j = i - 1; j >= 0 && (unsortedList[j] > tmp); j--) {
+                    unsortedList[j + 1] = unsortedList[j];
+                }
+                unsortedList[j + 1] = tmp;
+            }
+            return unsortedList;
+        }
+        //end
+
+        // default sort
+        function sort(arr) {
+            arr.sort(function(a, b) {
+                return a - b
+            });
+            return arr;
+        }
+
+        function quicksortBasic(array) {
+            if (array.length < 2) {
+                return array;
+            }
+
+            var pivot = array[0];
+            var lesser = [];
+            var greater = [];
+
+            for (var i = 1; i < array.length; i++) {
+                if (array[i] < pivot) {
+                    lesser.push(array[i]);
+                } else {
+                    greater.push(array[i]);
+                }
+            }
+
+            return quicksortBasic(lesser).concat(pivot, quicksortBasic(greater));
+        }
+
+        function mergeSort(arr) {
+            if (arr.length < 2) return arr;
+            var mid = Math.floor(arr.length / 2);
+            var subLeft = mergeSort(arr.slice(0, mid));
+            var subRight = mergeSort(arr.slice(mid));
+
+            return merge(subLeft, subRight);
+        }
+
+        function merge(a, b) {
+            var result = [];
+            while (a.length > 0 && b.length > 0)
+                result.push(a[0] < b[0] ? a.shift() : b.shift());
+            return result.concat(a.length ? a : b);
+        }
+
+        //        =============================================
+
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * Math.floor(max)) + 1;
+        }
+
+        function analyzer(iteration, arr, func) {
+            let start = Date.now();
+            for (let i = 0; i < iteration; i++) {
+                arr.push(getRandomInt(iteration))
+                func(arr);
+            }
+            let end = Date.now();
+            return end - start;
+        }
+
+        function createData(num, arr, i, func) {
+            let dataArr = [];
+            for (i; i >= 1; i--) {
+                dataArr.push(analyzer(num / i, arr, func))
+            }
+            return dataArr
+        }
+
+        function createLabels(num) {
+            let arr = [];
+            for (var i = 1; i <= num; i++) {
+                arr.push(i);
+            }
+            return arr;
+        }
+
+        let context = document.getElementById("chart").getContext("2d");
+        let chart = new Chart(context, {
+            type: "line",
+            data: {
+                labels: createLabels(20),
+                datasets: [{
+                    label: "recursive bubble sort",
+                    fill: false,
+                    backgroundColor: "red",
+                    borderColor: "red",
+                    data: createData(100, givenArr, 20, recursiveSort)
+                }, {
+                    label: "insertion sort",
+                    fill: false,
+                    backgroundColor: "blue",
+                    borderColor: "blue",
+                    data: createData(100, givenArr, 20, insertionSort)
+                }, {
+                    label: "default sort",
+                    fill: false,
+                    backgroundColor: "green",
+                    borderColor: "green",
+                    data: createData(100, givenArr, 20, sort)
+                }]
+            }
+        });
+    </script>
+
+</body>
+
+</html>
